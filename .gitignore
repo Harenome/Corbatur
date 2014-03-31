@@ -1,0 +1,17 @@
+# omniORB
+omniORB-4.1.7/
+*.hh
+*SK.cc
+
+# C++
+*.o
+
+# Misc.
+*.old
+*~
+
+# Various dirs.
+doc/
+obj/
+bin/
+lib/
