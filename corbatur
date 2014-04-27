@@ -1,8 +1,51 @@
 #!/bin/bash
 
+PATH_OMNIORB="omniORB-4.1.7"
+PATH_OMNIORB_LIB="$PATH_OMNIORB/lib"
+PATH_OMNIORB_BIN="$PATH_OMNIORB/bin"
+
+DEFAULT_PORT=2810
+
 if ! [[ -f bin/main ]]; then
     echo "Are you sure you ran make ?" 1&>2
     exit 66
 fi
 
-LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH bin/main
+if [[ $# -eq 2 ]]; then
+    PORT=$2
+    ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+elif [[ $# -eq 3 ]]; then
+    PORT=$2
+    ADDRESS=$3
+elif [[ $# -ne 1 ]]; then
+    echo "Usage: $0 <nickname> [port] [address]" 1<&2
+    exit 64
+else
+    PORT=$DEFAULT_PORT
+    ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+fi
+
+NICKNAME=$1
+
+if ! [[ -d logs ]]; then
+    mkdir -p logs
+fi
+if ! [[ -d logs/log-$PORT ]]; then
+    mkdir -p logs/log-$PORT
+fi
+
+if ! [[ -f logs/log-$PORT/omninames-$(hostname).log ]]; then
+    LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH OMNINAMES_LOGDIR=logs/log-$PORT $PATH_OMNIORB_BIN/omniNames -start $PORT &> /dev/null &
+    PID_OMNINAMES=$!
+else
+    LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH OMNINAMES_LOGDIR=logs/log-$PORT $PATH_OMNIORB_BIN/omniNames &> /dev/null &
+    PID_OMNINAMES=$!
+fi
+
+sleep 1
+
+trap "echo ' ' && kill -9 $PID_OMNINAMES &> /dev/null && exit 0" 0 2
+
+LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH bin/main $NICKNAME $PORT $ADDRESS
+
+exit $?

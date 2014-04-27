@@ -212,3 +212,50 @@ client & client::operator= (client c)
     this->swap (c);
     return * this;
 }
+
+void client::_print_prompt (void)
+{
+    std::cout << _client_infos.name << "@corbatur $ ";
+}
+
+void client::run (void * arg)
+{
+    std::string last_contact;
+    char buffer[2048];
+
+    _print_prompt ();
+    while (std::cin.getline (buffer, 2048))
+    {
+        std::string line (buffer);
+        if (parser::is_message (line))
+        {
+            if (parser::message_has_destination (line))
+                last_contact = parser::message_destination (line);
+
+            if (last_contact.size () > 0)
+            {
+                std::string message = parser::message_content (line);
+                send_message_to_contact (last_contact.c_str (), message.c_str ());
+            }
+            else
+                std::cerr << "Error : Sorry I did not understand whom to send your message." << std::endl;
+        }
+        else if (line == "bye")
+        {
+            exit ();
+        }
+        _print_prompt ();
+    }
+    /* std::cout << "LOLLLLLLLLLL" << std::endl; */
+    /* sleep (10); */
+    /* std::cout << "LOLLLLLLLLLL" << std::endl; */
+}
+
+client::client (void (*fn)(void*), void* arg, priority_t pri)
+: omni_thread (fn, arg, pri)
+{
+}
+client::client (void * (*fn)(void*), void* arg, priority_t pri)
+: omni_thread (fn, arg, pri)
+{
+}

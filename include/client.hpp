@@ -19,20 +19,27 @@
 #include <fstream>
 #include <map>
 
+#include "omnithread.h"
+
 #include "corbatur.hh"
+#include "parser.hpp"
+#include "server.hpp"
 #include "contact_manager.hpp"
 
 /**
  * \brief Client.
  */
-class client
+class client : public omni_thread
 {
 public:
     client (void);
+    client (void (*fn)(void*), void* arg = NULL, priority_t pri = omni_thread::PRIORITY_NORMAL);
+    client (void * (*fn)(void*), void* arg = NULL, priority_t pri = omni_thread::PRIORITY_NORMAL);
     client (const client & c);
     client (const char * program_name, const std::string & name, const std::string & address);
     client (const char * program_name, const std::string & name, const std::string & address, const contact_manager & contacts);
     ~client (void);
+    void run (void * arg);
     void swap (client & c);
     void read_contacts (const char * file_path);
     client & operator= (client c);
@@ -45,6 +52,7 @@ private:
     contact_manager _contacts;
     const char * _program_name;
 
+    void _print_prompt (void);
     int _send_message_to_address (const char * address, const char * m);
     int _send_message_to_contact (const char * name, const char * m);
     int _send_message_to_contact (const contact & c, const char * m);

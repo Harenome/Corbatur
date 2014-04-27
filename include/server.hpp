@@ -17,17 +17,23 @@
 
 #include <iostream>
 
+#include "omnithread.h"
+
 #include "contact.hpp"
 #include "contact_manager.hpp"
 #include "corbatur_impl.hpp"
 
-class server
+class server : public omni_thread
 {
 public:
     server (void);
+    server (int argc, char ** argv);
     ~server (void);
-    int run (int argc, char ** argv);
+    void run (void * arg);
+    int _run (int argc, char ** argv);
 private:
+    int _argc;
+    char ** _argv;
     contact_manager _manager;
     static CORBA::Boolean _bind_object_to_name (CORBA::ORB_ptr orb, CORBA::Object_ptr objref);
 };

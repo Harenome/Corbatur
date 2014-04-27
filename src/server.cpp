@@ -22,7 +22,17 @@ server::~server (void)
 {
 }
 
-int server::run (int argc, char ** argv)
+server::server (int argc, char ** argv)
+: _argc (argc), _argv (argv)
+{
+}
+
+void server::run (void * arg)
+{
+    _run (_argc, _argv);
+}
+
+int server::_run (int argc, char ** argv)
 {
     try
     {
