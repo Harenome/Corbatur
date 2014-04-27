@@ -121,6 +121,7 @@ int client::_send_message_to_address (const char * address, const char * m)
             std::cerr << "The object reference is nil!" << std::endl;
         else
             chat_ref->message (_client_infos, m);
+        orb->destroy ();
     }
     catch (CORBA::TRANSIENT &)
     {

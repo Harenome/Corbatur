@@ -207,9 +207,7 @@ std::ostream & contact::write_to_stream (std::ostream & os) const
 
 std::ostream & operator<< (std::ostream & os, const contact & c)
 {
-    c.write_to_stream (os);
-
-    return os;
+    return c.write_to_stream (os);
 }
 
 std::istream & operator>> (std::istream & is, contact & c)
