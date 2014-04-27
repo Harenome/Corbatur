@@ -97,7 +97,7 @@ int client::_send_message_to_contact (const contact & c, const char * m)
         _send_message_to_address (it->c_str (), m);
 
     std::vector<std::string> aliases = c.aliases ();
-    for (std::vector<std::string>::const_iterator it = addresses.begin (); it != addresses.end (); ++it)
+    for (std::vector<std::string>::const_iterator it = aliases.begin (); it != aliases.end (); ++it)
         if (! _contacted[*it])
             _send_message_to_contact (* it, m);
 
