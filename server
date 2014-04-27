@@ -1,0 +1,34 @@
+#!/bin/bash
+
+PATH_OMNIORB="omniORB-4.1.7"
+PATH_OMNIORB_LIB="$PATH_OMNIORB/lib"
+PATH_OMNIORB_BIN="$PATH_OMNIORB/bin"
+
+# Start
+if ! [[ -f bin/server ]]; then
+    echo "Are you sure you ran make ?" 1&>2
+    exit 66
+fi
+
+if ! [[ -d logs ]]; then
+mkdir -p logs
+fi
+
+echo "Starting omniNames..."
+if ! [[ -f logs/omninames-$(hostname).log ]]; then
+    LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH OMNINAMES_LOGDIR=logs $PATH_OMNIORB_BIN/omniNames -start 2810 &> /dev/null &
+    PID_OMNINAMES=$!
+else
+    LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH OMNINAMES_LOGDIR=logs $PATH_OMNIORB_BIN/omniNames &> /dev/null &
+    PID_OMNINAMES=$!
+fi
+echo "omniNames started with PID $PID_OMNINAMES"
+echo ""
+sleep 1
+
+trap "echo ' ' && echo 'Killing omniNames...' && kill -9 $PID_OMNINAMES && echo 'Done' && exit 0" 0 2
+
+echo "Starting server..."
+LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH bin/server -ORBInitRef NameService=corbaname::localhost:2810
+
+exit $?

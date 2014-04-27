@@ -1,0 +1,13 @@
+module corbatur
+{
+    struct sender
+    {
+        string name;
+        string address;
+    };
+
+    interface chat
+    {
+        void message (in sender s, in string content);
+    };
+};
