@@ -34,6 +34,13 @@ contact::contact (const std::string & name)
 {
 }
 
+contact::contact (const std::string & name, const std::vector<std::string> & addresses, const std::vector<std::string> & aliases)
+: _name (name)
+{
+    _addresses = addresses;
+    _aliases = aliases;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Destructeur.
 ///////////////////////////////////////////////////////////////////////////////
@@ -203,4 +210,38 @@ std::ostream & operator<< (std::ostream & os, const contact & c)
     c.write_to_stream (os);
 
     return os;
+}
+
+std::istream & operator>> (std::istream & is, contact & c)
+{
+    bool error = false;
+    contact new_contact;
+    std::string name;
+    is >> name;
+
+    char name_buffer[2048];
+    if (sscanf (name.c_str (), "%[a-zA-Z]", name_buffer) == 1)
+    {
+        new_contact.set_name (name);
+    }
+    else
+    {
+        is.setstate (std::ios::failbit);
+        error = true;
+    }
+
+    std::string thing;
+    while (! error && is >> thing)
+    {
+        char thing_buffer[2048];
+        if (sscanf (thing.c_str (), "%[a-zA-Z]", thing_buffer) == 1)
+            new_contact.add_alias (thing);
+        else if (sscanf (thing.c_str (), "%[:0-9]", thing_buffer) == 1)
+            new_contact.add_address (thing);
+    }
+
+    if (! error)
+        c = new_contact;
+
+    return is;
 }

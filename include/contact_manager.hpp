@@ -15,8 +15,13 @@
 #ifndef __CONTACT_MANAGER_HPP__
 #define __CONTACT_MANAGER_HPP__
 
-#include <ostream>
 #include <map>
+#include <string>
+#include <iostream>
+#include <ostream>
+#include <istream>
+#include <sstream>
+#include <cstdio>
 
 #include "contact.hpp"
 
@@ -66,6 +71,8 @@ private:
 ///////////////////////////////////////////////////////////////////////////////
 
 std::ostream & operator<< (std::ostream & os, const contact_manager & cm);
+
+std::istream & operator>> (std::istream & is, contact_manager & cm);
 
 inline void swap (contact_manager & a, contact_manager & b)
 {

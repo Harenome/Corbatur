@@ -29,7 +29,7 @@ vpath %SK.cc $(PATH_ORB)
 vpath %.o $(PATH_OBJ)
 vpath %.a $(PATH_LIB)
 
-all: client server
+all: client server main
 
 %.hh: %.idl | orb_dir
 		$(OMNIIDL) -bcxx -C $(PATH_ORB) $<
@@ -50,7 +50,10 @@ server.o: server.cpp server.hpp contact.hpp contact_manager.hpp corbatur.hh corb
 client.o: client.cpp client.hpp corbatur.hh
 le_client.o: le_client.cpp
 le_server.o: le_server.cpp
+main.o: main.cpp
 
+main: main.o libcorbatur.a | bin_dir
+		$(CC) $(FLAGS_LIB) -o $(PATH_BIN)/$@ $(PATH_OBJ)/main.o -lcorbatur
 
 client: libcorbatur.a le_client.o | bin_dir
 		$(CC) $(FLAGS_LIB) -o $(PATH_BIN)/$@ $(PATH_OBJ)/le_client.o -lcorbatur

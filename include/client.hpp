@@ -19,6 +19,9 @@
 
 #include "corbatur.hh"
 
+/**
+ * \brief Client.
+ */
 class client
 {
 public:

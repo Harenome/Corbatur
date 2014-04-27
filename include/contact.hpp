@@ -15,8 +15,13 @@
 #ifndef __CONTACT_HPP__
 #define __CONTACT_HPP__
 
+#include <string>
+#include <cstdio>
 #include <vector>
+#include <iostream>
 #include <ostream>
+#include <sstream>
+#include <istream>
 #include <algorithm>
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -45,6 +50,8 @@ public:
      * \param name Nom.
      */
     contact (const std::string & name);
+
+    contact (const std::string & name, const std::vector<std::string> & addresses, const std::vector<std::string> & aliases);
 
     /**
      * \brief Destructeur.
@@ -208,6 +215,8 @@ private:
  * \relates contact
  */
 std::ostream & operator<< (std::ostream & os, const contact & c);
+
+std::istream & operator>> (std::istream & is, contact & c);
 
 /**
  * \brief Échanger.

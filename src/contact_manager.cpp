@@ -150,3 +150,41 @@ std::ostream & operator<< (std::ostream & os, const contact_manager & c)
 {
     return c.write_to_stream (os);
 }
+
+std::istream & operator>> (std::istream & is, contact_manager & cm)
+{
+    bool error = false;
+    contact_manager new_cm;
+
+    char buffer[2048];
+    while (is.getline (buffer, 2048))
+    {
+        std::string line (buffer);
+        std::string::size_type column = line.find_first_of (':');
+        if (column != std::string::npos && column != 0)
+        {
+            std::replace (line.begin (), line.end (), ',', ' ');
+            std::replace (line.begin () + column, line.begin () + column + 1, ':', ' ');
+
+            std::stringstream stream (line, std::ios_base::in | std::ios_base::out);
+            contact new_contact;
+            stream >> new_contact;
+
+            error = ! stream.fail ();
+            if (error)
+                is.setstate (std::ios::failbit);
+            else
+                new_cm.add_contact (new_contact);
+        }
+        else
+        {
+            error = true;
+            is.setstate (std::ios::failbit);
+        }
+    }
+
+    if (! error)
+        cm = new_cm;
+
+    return is;
+}
