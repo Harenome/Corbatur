@@ -42,26 +42,26 @@ corbatur.hh: corbatur.idl
 corbaturSK.o: corbatur.hh | obj_dir
 		$(CC) $(FLAGS_CC) $(FLAGS_INCLUDE) -o $(PATH_OBJ)/$@ -c $(PATH_ORB)/corbaturSK.cc
 
-
 contact.o: contact.cpp contact.hpp
 contact_manager.o: contact_manager.cpp contact_manager.hpp
 corbatur_impl.o: corbatur_impl.cpp corbatur_impl.hpp contact_manager.hpp corbatur.hh
 server.o: server.cpp server.hpp contact.hpp contact_manager.hpp corbatur.hh corbatur_impl.hpp
 client.o: client.cpp client.hpp corbatur.hh
-le_client.o: le_client.cpp
-le_server.o: le_server.cpp
+parser.o: parser.cpp parser.hpp
+run_client.o: run_client.cpp
+run_server.o: run_server.cpp
 main.o: main.cpp
 
 main: main.o libcorbatur.a | bin_dir
 		$(CC) $(FLAGS_LIB) -o $(PATH_BIN)/$@ $(PATH_OBJ)/main.o -lcorbatur
 
-client: libcorbatur.a le_client.o | bin_dir
-		$(CC) $(FLAGS_LIB) -o $(PATH_BIN)/$@ $(PATH_OBJ)/le_client.o -lcorbatur
+client: libcorbatur.a run_client.o | bin_dir
+		$(CC) $(FLAGS_LIB) -o $(PATH_BIN)/$@ $(PATH_OBJ)/run_client.o -lcorbatur
 
-server: libcorbatur.a le_server.o | bin_dir
-		$(CC) $(FLAGS_LIB) -o $(PATH_BIN)/$@ $(PATH_OBJ)/le_server.o -lcorbatur
-libcorbatur.a: contact.o contact_manager.o corbatur_impl.o server.o client.o corbaturSK.o | lib_dir
-		ar -crv $(PATH_LIB)/libcorbatur.a $(PATH_OBJ)/contact.o $(PATH_OBJ)/contact_manager.o $(PATH_OBJ)/server.o $(PATH_OBJ)/corbatur_impl.o $(PATH_OBJ)/client.o $(PATH_OBJ)/corbaturSK.o
+server: libcorbatur.a run_server.o | bin_dir
+		$(CC) $(FLAGS_LIB) -o $(PATH_BIN)/$@ $(PATH_OBJ)/run_server.o -lcorbatur
+libcorbatur.a: parser.o contact.o contact_manager.o corbatur_impl.o server.o client.o corbaturSK.o | lib_dir
+		ar -crv $(PATH_LIB)/libcorbatur.a $(PATH_OBJ)/parser.o $(PATH_OBJ)/contact.o $(PATH_OBJ)/contact_manager.o $(PATH_OBJ)/server.o $(PATH_OBJ)/corbatur_impl.o $(PATH_OBJ)/client.o $(PATH_OBJ)/corbaturSK.o
 		ranlib $(PATH_LIB)/libcorbatur.a
 
 omniorb_extract:

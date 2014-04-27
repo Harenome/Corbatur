@@ -32,8 +32,8 @@ int server::run (int argc, char ** argv)
         chat_impl * server_chat = new chat_impl (_manager);
         PortableServer::ObjectId_var chat_id = poa->activate_object (server_chat);
         obj = server_chat->_this ();
-        CORBA::String_var ior = orb->object_to_string (obj);
-        std::cout << ior << std::endl << std::endl;
+        /* CORBA::String_var ior = orb->object_to_string (obj); */
+        /* std::cout << ior << std::endl << std::endl; */
 
         if (! server::_bind_object_to_name (orb, obj))
             return 1;

@@ -14,36 +14,113 @@
  */
 #include "client.hpp"
 
+const char client::_ORBINITREF[] = "-ORBInitRef";
+
 client::client (void)
 {
+}
+
+client::client (const client & c)
+: _program_name (c._program_name)
+{
+    _client_infos.name = c._client_infos.name;
+    _client_infos.address = c._client_infos.address;
+    _contacts = c._contacts;
+}
+
+client::client (const char * program_name, const std::string & name, const std::string & address)
+: _program_name (program_name)
+{
+    _client_infos.name = name.c_str ();
+    _client_infos.address = address.c_str ();
+}
+
+client::client (const char * program_name, const std::string & name, const std::string & address, const contact_manager & contacts)
+: _program_name (program_name)
+{
+    _client_infos.name = name.c_str ();
+    _client_infos.address = address.c_str ();
+    _contacts = contacts;
 }
 
 client::~client (void)
 {
 }
 
-int client::send_message (int argc, char ** argv)
+void client::read_contacts (const char * file_path)
+{
+    contact_manager cm;
+    std::ifstream file;
+    file.open (file_path, std::ifstream::in);
+    file >> cm;
+    _contacts = cm;
+}
+
+void client::_reset_contacted (void)
+{
+    _contacted.clear ();
+    for (contact_manager_const_iterator it = _contacts.begin (); it != _contacts.end (); ++it)
+    {
+        std::pair<std::string, bool> element (it->second.name (), false);
+        _contacted.insert (element);
+    }
+}
+
+int client::send_message_to_contact (const char * name, const char * m)
+{
+    std::string contact_name (name);
+    return send_message_to_contact (contact_name, m);
+}
+
+int client::send_message_to_contact (const std::string & name, const char * m)
+{
+    _reset_contacted ();
+    return _send_message_to_contact (name, m);
+}
+
+int client::_send_message_to_contact (const char * name, const char * m)
+{
+    std::string contact_name (name);
+    return _send_message_to_contact (contact_name, m);
+}
+
+int client::_send_message_to_contact (const std::string & name, const char * m)
+{
+    return _send_message_to_contact (_contacts[name], m);
+}
+
+int client::_send_message_to_contact (const contact & c, const char * m)
+{
+    _contacted[c.name ()] = true;
+    std::vector<std::string> addresses = c.addresses ();
+    for (std::vector<std::string>::const_iterator it = addresses.begin (); it != addresses.end (); ++it)
+        _send_message_to_address (it->c_str (), m);
+
+    std::vector<std::string> aliases = c.aliases ();
+    for (std::vector<std::string>::const_iterator it = addresses.begin (); it != addresses.end (); ++it)
+        if (! _contacted[*it])
+            _send_message_to_contact (* it, m);
+
+    return 0;
+}
+
+int client::_send_message_to_address (const char * address, const char * m)
 {
     try
     {
-        int fake_argc = argc - 2;
-        CORBA::ORB_var orb = CORBA::ORB_init (fake_argc, argv);
+        int fake_argc = 3;
+        std::string corbaname_address ("NameService=corbaname::");
+        corbaname_address += address;
+        char * fake_argv[3] = { (char *) _program_name, (char *) _ORBINITREF, (char *) corbaname_address.c_str () };
+
+        CORBA::ORB_var orb = CORBA::ORB_init (fake_argc, fake_argv);
         CORBA::Object_var obj = client::_get_object_reference (orb);
         corbatur::chat_var chat_ref = corbatur::chat::_narrow (obj);
 
         if (CORBA::is_nil (chat_ref))
             std::cerr << "The object reference is nil!" << std::endl;
         else
-        {
-            std::string temp_name (argv[argc-2]);
-            std::string temp_address (argv[argc-1]);
-
-            corbatur::sender s;
-            s.name = temp_name.c_str ();
-            s.address = temp_address.c_str ();
-
-            chat_ref->message (s, (const char *) "Hi!");
-        }
+            chat_ref->message (_client_infos, m);
     }
     catch (CORBA::TRANSIENT &)
     {
@@ -120,4 +197,18 @@ CORBA::Object_ptr client::_get_object_reference (CORBA::ORB_ptr orb)
     }
 
     return CORBA::Object::_nil ();
+}
+
+void client::swap (client & c)
+{
+    std::swap (_program_name, c._program_name);
+    std::swap (_client_infos.name, c._client_infos.name);
+    std::swap (_client_infos.address, c._client_infos.address);
+    _contacts.swap (c._contacts);
+}
+
+client & client::operator= (client c)
+{
+    this->swap (c);
+    return * this;
 }

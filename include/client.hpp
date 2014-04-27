@@ -16,8 +16,11 @@
 #define __CLIENT_HPP__
 
 #include <iostream>
+#include <fstream>
+#include <map>
 
 #include "corbatur.hh"
+#include "contact_manager.hpp"
 
 /**
  * \brief Client.
@@ -26,9 +29,30 @@ class client
 {
 public:
     client (void);
+    client (const client & c);
+    client (const char * program_name, const std::string & name, const std::string & address);
+    client (const char * program_name, const std::string & name, const std::string & address, const contact_manager & contacts);
     ~client (void);
-    int send_message (int argc, char ** argv);
+    void swap (client & c);
+    void read_contacts (const char * file_path);
+    client & operator= (client c);
+    int send_message_to_contact (const char * name, const char * m);
+    int send_message_to_contact (const std::string & name, const char * m);
+
 private:
+    std::map<std::string, bool> _contacted;
+    corbatur::sender _client_infos;
+    contact_manager _contacts;
+    const char * _program_name;
+
+    int _send_message_to_address (const char * address, const char * m);
+    int _send_message_to_contact (const char * name, const char * m);
+    int _send_message_to_contact (const contact & c, const char * m);
+    int _send_message_to_contact (const std::string & name, const char * m);
+
+    void _reset_contacted (void);
+
+    static const char _ORBINITREF[];
     static CORBA::Object_ptr _get_object_reference (CORBA::ORB_ptr orb);
 };
 

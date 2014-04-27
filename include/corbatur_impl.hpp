@@ -30,6 +30,7 @@ public:
     void message (const corbatur::sender & s, const char * message);
 private:
     contact_manager & _manager;
+    std::string _last_contact;
 };
 
 #endif /* __CORBATUR_IMPL_HPP__ */

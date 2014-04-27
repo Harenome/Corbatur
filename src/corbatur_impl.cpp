@@ -15,12 +15,12 @@
 #include "corbatur_impl.hpp"
 
 chat_impl::chat_impl (void)
-: _manager (contact_manager::DEFAULT)
+: _manager (contact_manager::DEFAULT), _last_contact ("")
 {
 }
 
 chat_impl::chat_impl (contact_manager & manager)
-: _manager (manager)
+: _manager (manager), _last_contact ("")
 {
 }
 
@@ -42,7 +42,10 @@ void chat_impl::message (const corbatur::sender & s, const char * message)
         _manager.add_contact (name);
     _manager.add_address (name, address);
 
-    std::cout << message << std::endl;
-    std::cout << "My contacts right now:" << std::endl;
-    std::cout << _manager << std::endl;
+    if (_last_contact != name)
+    {
+        _last_contact = name;
+        std::cout << name;
+    }
+    std::cout << ": " << message << std::endl;
 }

@@ -1,8 +1,19 @@
 #!/bin/bash
 
 if ! [[ -f bin/client ]]; then
-    echo "Are you sure you ran make ?" 1&>2
+    echo "Are you sure you ran make ?" 1>&2
     exit 66
 fi
 
-LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH bin/client -ORBInitRef NameService=corbaname::$1 $2 $(hostname -I | cut -d ' ' -f 1)
+if [[ $# -eq 1 ]]; then
+    ADDRESS=$(hostname -I | cut -d ' ' -f 1)
+elif [[ $# -eq 2 ]]; then
+    ADDRESS=$2
+else
+    echo "Usage: $0 <nickname>" 1>&2
+    exit 64
+fi
+
+NICKNAME=$1
+
+LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH bin/client $NICKNAME $ADDRESS

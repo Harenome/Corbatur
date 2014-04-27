@@ -4,31 +4,47 @@ PATH_OMNIORB="omniORB-4.1.7"
 PATH_OMNIORB_LIB="$PATH_OMNIORB/lib"
 PATH_OMNIORB_BIN="$PATH_OMNIORB/bin"
 
+DEFAULT_PORT=2810
+
 # Start
 if ! [[ -f bin/server ]]; then
-    echo "Are you sure you ran make ?" 1&>2
+    echo "Are you sure you ran make ?" 1>&2
     exit 66
 fi
 
-if ! [[ -d logs ]]; then
-mkdir -p logs
+if [[ $# -eq 1 ]]; then
+    PORT=$1
+elif [[ $# -ne 0 ]]; then
+    echo "Usage: $0 [port]" 1<&2
+    exit 64
+else
+    PORT=$DEFAULT_PORT
 fi
 
-echo "Starting omniNames..."
-if ! [[ -f logs/omninames-$(hostname).log ]]; then
-    LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH OMNINAMES_LOGDIR=logs $PATH_OMNIORB_BIN/omniNames -start 2810 &> /dev/null &
+if ! [[ -d logs ]]; then
+    mkdir -p logs
+fi
+
+if ! [[ -d logs/log-$PORT ]]; then
+    mkdir -p logs/log-$PORT
+fi
+
+# echo "Starting omniNames..."
+if ! [[ -f logs/log-$PORT/omninames-$(hostname).log ]]; then
+    LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH OMNINAMES_LOGDIR=logs/log-$PORT $PATH_OMNIORB_BIN/omniNames -start $PORT &> /dev/null &
     PID_OMNINAMES=$!
 else
-    LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH OMNINAMES_LOGDIR=logs $PATH_OMNIORB_BIN/omniNames &> /dev/null &
+    LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH OMNINAMES_LOGDIR=logs/log-$PORT $PATH_OMNIORB_BIN/omniNames &> /dev/null &
     PID_OMNINAMES=$!
 fi
-echo "omniNames started with PID $PID_OMNINAMES"
-echo ""
+
+# echo "omniNames started with PID $PID_OMNINAMES"
+# echo ""
 sleep 1
 
-trap "echo ' ' && echo 'Killing omniNames...' && kill -9 $PID_OMNINAMES && echo 'Done' && exit 0" 0 2
+trap "echo ' ' && kill -9 $PID_OMNINAMES && exit 0" 0 2
 
-echo "Starting server..."
-LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH bin/server -ORBInitRef NameService=corbaname::localhost:2810
+# echo "Starting server..."
+LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH bin/server -ORBInitRef NameService=corbaname::localhost:$PORT
 
 exit $?
