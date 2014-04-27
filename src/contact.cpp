@@ -236,7 +236,7 @@ std::istream & operator>> (std::istream & is, contact & c)
         char thing_buffer[2048];
 
         /* Si la chaîne contient un ':'. */
-        if (sscanf (thing.c_str (), "%*[a-zA-Z0-9]%[:]", thing_buffer) == 1)
+        if (sscanf (thing.c_str (), "%*[-.a-zA-Z0-9]%[:]", thing_buffer) == 1)
             new_contact.add_address (thing);
         else
             new_contact.add_alias (thing);

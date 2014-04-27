@@ -42,6 +42,7 @@ void chat_impl::message (const corbatur::sender & s, const char * message)
         _manager.add_contact (name);
     _manager.add_address (name, address);
 
+    std::cout << "> ";
     if (_last_contact != name)
     {
         _last_contact = name;
