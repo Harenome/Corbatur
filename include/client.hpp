@@ -37,12 +37,11 @@ public:
     client (void * (*fn)(void*), void* arg = NULL, priority_t pri = omni_thread::PRIORITY_NORMAL);
     client (const client & c);
     client (const char * program_name, const std::string & name, const std::string & address);
-    client (const char * program_name, const std::string & name, const std::string & address, const contact_manager & contacts);
+    client (const char * program_name, const std::string & name, const std::string & address, contact_manager * contacts);
     ~client (void);
     void set_self_address (const std::string & address);
     void run (void * arg);
     void swap (client & c);
-    void read_contacts (const char * file_path);
     client & operator= (client c);
     int send_message_to_contact (const char * name, const char * m);
     int send_message_to_contact (const std::string & name, const char * m);
@@ -50,7 +49,7 @@ public:
 private:
     std::map<std::string, bool> _contacted;
     corbatur::sender _client_infos;
-    contact_manager _contacts;
+    contact_manager * _contacts;
     const char * _program_name;
     std::string _self_address;
 

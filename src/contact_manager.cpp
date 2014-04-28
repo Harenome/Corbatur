@@ -142,6 +142,16 @@ contact_manager & contact_manager::operator= (contact_manager cm)
     return * this;
 }
 
+void contact_manager::lock (void)
+{
+    /* _mutex.lock (); */
+}
+
+void contact_manager::unlock (void)
+{
+    /* _mutex.unlock (); */
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Fonctions non membres.
 ///////////////////////////////////////////////////////////////////////////////

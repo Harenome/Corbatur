@@ -35,7 +35,7 @@ client::client (const char * program_name, const std::string & name, const std::
     _client_infos.address = address.c_str ();
 }
 
-client::client (const char * program_name, const std::string & name, const std::string & address, const contact_manager & contacts)
+client::client (const char * program_name, const std::string & name, const std::string & address, contact_manager * contacts)
 : _program_name (program_name)
 {
     _client_infos.name = name.c_str ();
@@ -47,19 +47,10 @@ client::~client (void)
 {
 }
 
-void client::read_contacts (const char * file_path)
-{
-    contact_manager cm;
-    std::ifstream file;
-    file.open (file_path, std::ifstream::in);
-    file >> cm;
-    _contacts = cm;
-}
-
 void client::_reset_contacted (void)
 {
     _contacted.clear ();
-    for (contact_manager_const_iterator it = _contacts.begin (); it != _contacts.end (); ++it)
+    for (contact_manager_const_iterator it = _contacts->begin (); it != _contacts->end (); ++it)
     {
         std::pair<std::string, bool> element (it->second.name (), false);
         _contacted.insert (element);
@@ -86,12 +77,13 @@ int client::_send_message_to_contact (const char * name, const char * m)
 
 int client::_send_message_to_contact (const std::string & name, const char * m)
 {
-    return _send_message_to_contact (_contacts[name], m);
+    return _send_message_to_contact ((* _contacts)[name], m);
 }
 
 int client::_send_message_to_contact (const contact & c, const char * m)
 {
     _contacted[c.name ()] = true;
+    std::cout << c << std::endl;
     std::vector<std::string> addresses = c.addresses ();
     for (std::vector<std::string>::const_iterator it = addresses.begin (); it != addresses.end (); ++it)
         _send_message_to_address (it->c_str (), m);
@@ -213,7 +205,7 @@ void client::swap (client & c)
     std::swap (_program_name, c._program_name);
     std::swap (_client_infos.name, c._client_infos.name);
     std::swap (_client_infos.address, c._client_infos.address);
-    _contacts.swap (c._contacts);
+    std::swap (_contacts, c._contacts);
 }
 
 client & client::operator= (client c)
@@ -244,7 +236,9 @@ void client::run (void * arg)
             if (last_contact.size () > 0)
             {
                 std::string message = parser::message_content (line);
+                _contacts->lock ();
                 send_message_to_contact (last_contact.c_str (), message.c_str ());
+                _contacts->unlock ();
             }
             else
                 std::cerr << "Error : Sorry I did not understand whom to send your message." << std::endl;

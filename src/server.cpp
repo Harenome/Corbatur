@@ -151,3 +151,8 @@ CORBA::Boolean server::_bind_object_to_name (CORBA::ORB_ptr orb, CORBA::Object_p
 
     return 1;
 }
+
+void server::set_contact_manager (contact_manager * manager)
+{
+    _manager = manager;
+}

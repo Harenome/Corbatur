@@ -15,11 +15,11 @@
 #include "corbatur_impl.hpp"
 
 chat_impl::chat_impl (void)
-: _manager (contact_manager::DEFAULT), _last_contact ("")
+: _manager (NULL), _last_contact ("")
 {
 }
 
-chat_impl::chat_impl (contact_manager & manager)
+chat_impl::chat_impl (contact_manager * manager)
 : _manager (manager), _last_contact ("")
 {
 }
@@ -28,7 +28,7 @@ chat_impl::~chat_impl (void)
 {
 }
 
-void chat_impl::set_manager (contact_manager & manager)
+void chat_impl::set_manager (contact_manager * manager)
 {
     _manager = manager;
 }
@@ -38,9 +38,11 @@ void chat_impl::message (const corbatur::sender & s, const char * message)
     std::string name (s.name);
     std::string address (s.address);
 
-    if (! _manager.exists (name))
-        _manager.add_contact (name);
-    _manager.add_address (name, address);
+    _manager->lock ();
+    if (! _manager->exists (name))
+        _manager->add_contact (name);
+    _manager->add_address (name, address);
+    _manager->unlock ();
 
     std::cout << "> ";
     if (_last_contact != name)

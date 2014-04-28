@@ -23,6 +23,8 @@
 #include <sstream>
 #include <cstdio>
 
+#include "omnithread.h"
+
 #include "contact.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,9 +63,12 @@ public:
     std::ostream & write_to_stream (std::ostream & os) const;
     void swap (contact_manager & cm);
     contact_manager & operator= (contact_manager cm);
+    void lock (void);
+    void unlock (void);
 
 private:
     std::map<std::string, contact> _contacts;
+    omni_mutex _mutex;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

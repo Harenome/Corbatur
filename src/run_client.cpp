@@ -7,7 +7,7 @@ int main (int argc, char ** argv)
     std::string address (argv[argc-1]);
 
     client c (argv[0], name, address);
-    c.read_contacts ("config.cfg");
+    /* c.read_contacts ("config.cfg"); */
 
     std::string last_contact;
     char buffer[2048];
