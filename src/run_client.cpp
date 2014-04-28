@@ -37,6 +37,7 @@ int main (int argc, char ** argv)
     char buffer[2048];
     while (std::cin.getline (buffer, 2048))
     {
+        c.read_contacts ("config.cfg");
         std::string line (buffer);
         if (parser::is_message (line))
         {
