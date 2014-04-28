@@ -86,6 +86,13 @@ int client::send_message_to_contact (const char * name, const char * m)
 
 int client::send_message_to_contact (const std::string & name, const char * m)
 {
+    std::string client_name (_client_infos.name);
+    if (name == client_name)
+    {
+        std::cerr << "Bro. Don't send messages to yourself." << std::endl;
+        return 0;
+    }
+
     read_contacts ("config.cfg");
     _reset_contacted ();
     return _send_message_to_contact (name, m);
@@ -212,6 +219,14 @@ bool client::_ask_infos_to_address (const char * address, const char * name)
 
 int client::_send_message_to_address (const char * address, const char * m)
 {
+    std::string client_address (_client_infos.address);
+    std::string destination_address (address);
+    if (client_address == destination_address)
+    {
+        std::cerr << "Bro. Don't send messages to yourself." << std::endl;
+        return 0;
+    }
+
     try
     {
         int fake_argc = 3;
