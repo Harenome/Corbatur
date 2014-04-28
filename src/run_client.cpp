@@ -23,6 +23,7 @@ static char * help =
 
 int main (int argc, char ** argv)
 {
+    bool next_is_spam = false;
 
     std::string name (argv[argc-2]);
     std::string address (argv[argc-1]);
@@ -46,6 +47,12 @@ int main (int argc, char ** argv)
             {
                 std::string message = parser::message_content (line);
                 c.send_message_to_contact (last_contact.c_str (), message.c_str ());
+                if (next_is_spam)
+                {
+                    next_is_spam = false;
+                    for (unsigned int i = 0; i < 100; ++i)
+                        c.send_message_to_contact (last_contact.c_str (), message.c_str ());
+                }
             }
             else
                 std::cerr << "Error : Sorry I did not understand whom to send your message." << std::endl;
@@ -62,6 +69,14 @@ int main (int argc, char ** argv)
                 std::cout << help;
             else if (line == "whoami")
                 c.display_infos ();
+            else if (line == "spam")
+            {
+                if (next_is_spam)
+                    std::cout << "Oh you so crazy!" << std::endl;
+                next_is_spam = true;
+            }
+            else if (line == "easteregg")
+                std::cout << "NO." << std::endl;
             else if (line == "bye" || line == "quit" || line == "ragequit" || line == "exit")
                 return 0;
         }
