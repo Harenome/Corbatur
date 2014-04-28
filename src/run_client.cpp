@@ -1,3 +1,5 @@
+#include <algorithm>
+
 #include "client.hpp"
 #include "parser.hpp"
 
@@ -6,8 +8,10 @@ static char * help =
 "---------\n"
 "* h, help\n"
 "\tDisplay the help.\n"
-"* ls, list\n"
+"* ls, list, who\n"
 "\tList contacts\n"
+"* who am i, whoami\n"
+"\tDisplay client info.\n"
 "* bye, exit, quit\n"
 "\tQuit.\n"
 "Special commands:\n"
@@ -46,12 +50,21 @@ int main (int argc, char ** argv)
             else
                 std::cerr << "Error : Sorry I did not understand whom to send your message." << std::endl;
         }
-        else if (line == "ls" || line == "list")
-            c.display_contacts ();
-        else if (line == "help" || line == "h")
-            std::cout << help;
-        else if (line == "bye" || line == "quit" || line == "ragequit" || line == "exit")
-            return 0;
+        else
+        {
+            /* On supprime tous les espaces pour que les commandes soient toujours reconnues.
+             * Du coup, certaines excentricités fonctionnent comme "w h o".
+             */
+            line.erase (std::remove (line.begin (), line.end (), ' '), line.end ());
+            if (line == "ls" || line == "list" || line == "who")
+                c.display_contacts ();
+            else if (line == "help" || line == "h")
+                std::cout << help;
+            else if (line == "whoami")
+                c.display_infos ();
+            else if (line == "bye" || line == "quit" || line == "ragequit" || line == "exit")
+                return 0;
+        }
     }
 
     return 0;

@@ -40,6 +40,7 @@ public:
     int send_message_to_contact (const char * name, const char * m);
     int send_message_to_contact (const std::string & name, const char * m);
     void display_contacts (void);
+    void display_infos (void);
 
 private:
     std::map<std::string, bool> _contacted;

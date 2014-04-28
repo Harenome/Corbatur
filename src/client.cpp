@@ -339,3 +339,8 @@ void client::display_contacts (void)
 {
     std::cout << "Known contacts:" << std::endl << _contacts << std::endl;
 }
+
+void client::display_infos (void)
+{
+    std::cout << "Who am i?" << std::endl << _client_infos.name << " " << _client_infos.address << std::endl;
+}
