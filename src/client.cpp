@@ -102,7 +102,7 @@ int client::_send_message_to_contact (const std::string & name, const char * m)
     bool found = false;
     if (! _contacts.exists (name))
     {
-        std::cerr << "Unknow contact !" << std::endl;
+        std::cerr << "/!\\ Unknown contact! Asking around..." << std::endl;
         _reset_asked ();
         for (contact_manager_const_iterator it = _contacts.begin (); ! found && it != _contacts.end (); ++it)
             found = _ask_infos_to_contact (it->second, name.c_str ());
@@ -181,6 +181,7 @@ bool client::_ask_infos_to_address (const char * address, const char * name)
                 std::string contact_name (name);
                 _contacts.add_contact (contact_name);
                 _contacts.add_address (contact_name, result_string);
+                contact_manager::save_contacts ("config.cfg", _contacts);
                 success = true;
             }
         }
