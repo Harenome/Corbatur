@@ -67,6 +67,17 @@ void client::_reset_contacted (void)
     }
 }
 
+void client::_reset_asked (void)
+{
+    _contacted.clear ();
+    for (contact_manager_const_iterator it = _contacts.begin (); it != _contacts.end (); ++it)
+    {
+        std::pair<std::string, bool> element (it->second.name (), false);
+        _asked.insert (element);
+    }
+}
+
+
 int client::send_message_to_contact (const char * name, const char * m)
 {
     std::string contact_name (name);
@@ -88,7 +99,21 @@ int client::_send_message_to_contact (const char * name, const char * m)
 
 int client::_send_message_to_contact (const std::string & name, const char * m)
 {
-    return _send_message_to_contact (_contacts[name], m);
+    bool found = false;
+    if (! _contacts.exists (name))
+    {
+        std::cerr << "Unknow contact !" << std::endl;
+        _reset_asked ();
+        for (contact_manager_const_iterator it = _contacts.begin (); ! found && it != _contacts.end (); ++it)
+            found = _ask_infos_to_contact (it->second, name.c_str ());
+    }
+    else
+        found = true;
+
+    if (found)
+        return _send_message_to_contact (_contacts[name], m);
+    else
+        return 0;
 }
 
 int client::_send_message_to_contact (const contact & c, const char * m)
@@ -105,6 +130,84 @@ int client::_send_message_to_contact (const contact & c, const char * m)
 
     return 0;
 }
+
+bool client::_ask_infos_to_contact (const std::string & contact_name, const char * name)
+{
+    if (_contacts.exists (contact_name))
+        return _ask_infos_to_contact (_contacts[contact_name], name);
+    else
+        return false;
+}
+
+bool client::_ask_infos_to_contact (const contact & c, const char * name)
+{
+    bool found = false;
+
+    _asked[c.name ()] = true;
+    std::vector<std::string> addresses = c.addresses ();
+    for (std::vector<std::string>::const_iterator it = addresses.begin (); ! found && it != addresses.end (); ++it)
+        found = _ask_infos_to_address (it->c_str (), name);
+
+    std::vector<std::string> aliases = c.aliases ();
+    for (std::vector<std::string>::const_iterator it = aliases.begin (); ! found && it != aliases.end (); ++it)
+        if (! _asked[*it])
+            found = _ask_infos_to_contact (* it, name);
+
+    return found;
+}
+
+bool client::_ask_infos_to_address (const char * address, const char * name)
+{
+    bool success = false;
+    try
+    {
+        int fake_argc = 3;
+        std::string corbaname_address ("NameService=corbaname::");
+        corbaname_address += address;
+        char * fake_argv[3] = { (char *) _program_name, (char *) _ORBINITREF, (char *) corbaname_address.c_str () };
+
+        CORBA::ORB_var orb = CORBA::ORB_init (fake_argc, fake_argv);
+        CORBA::Object_var obj = client::_get_object_reference (orb);
+        corbatur::chat_var chat_ref = corbatur::chat::_narrow (obj);
+
+        if (CORBA::is_nil (chat_ref))
+            std::cerr << "The object reference is nil!" << std::endl;
+        else
+        {
+            CORBA::String_var result = chat_ref->ask_infos (name);
+            std::string result_string (result);
+            if (result_string.size () > 0)
+            {
+                std::string contact_name (name);
+                _contacts.add_contact (contact_name);
+                _contacts.add_address (contact_name, result_string);
+                success = true;
+            }
+        }
+        orb->destroy ();
+    }
+    catch (CORBA::TRANSIENT &)
+    {
+        std::cerr << "Caught system exception TRANSIENT -- unable to contact the server." << std::endl;
+    }
+    catch (CORBA::SystemException & ex)
+    {
+        std::cerr << "Caught a CORBA::" << ex._name () << std::endl;
+    }
+    catch (CORBA::Exception & ex)
+    {
+        std::cerr << "Caught CORBA::Exception: " << ex._name () << std::endl;
+    }
+    catch (omniORB::fatalException & fe)
+    {
+        std::cerr << "Caught omniORB::fatalException:" << std::endl;
+        std::cerr << "\tfile: " << fe.file () << std::endl;
+        std::cerr << "\tline: " << fe.line () << std::endl;
+        std::cerr << "\tmessage: " << fe.errmsg () << std::endl;
+    }
+    return success;
+}
+
 
 int client::_send_message_to_address (const char * address, const char * m)
 {
@@ -214,4 +317,9 @@ client & client::operator= (client c)
 {
     this->swap (c);
     return * this;
+}
+
+void client::display_contacts (void)
+{
+    std::cout << "Known contacts:" << std::endl << _contacts << std::endl;
 }

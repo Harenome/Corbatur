@@ -28,6 +28,7 @@ public:
     virtual ~chat_impl (void);
     void set_manager (contact_manager & manager);
     void message (const corbatur::sender & s, const char * message);
+    char * ask_infos (const char * name);
 private:
     contact_manager _manager;
     std::string _last_contact;

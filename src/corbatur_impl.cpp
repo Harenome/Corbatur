@@ -52,3 +52,20 @@ void chat_impl::message (const corbatur::sender & s, const char * message)
     }
     std::cout << ": " << message << std::endl;
 }
+
+char * chat_impl::ask_infos (const char * name)
+{
+    static const char * not_found = "";
+    std::string contact_name (name);
+    if (_manager.exists (contact_name))
+    {
+        contact c = _manager[contact_name];
+        if (c.has_address ())
+        {
+            std::vector<std::string> addresses = c.addresses ();
+            return CORBA::string_dup (addresses[0].c_str ());
+        }
+    }
+
+    return CORBA::string_dup (not_found);
+}

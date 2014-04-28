@@ -39,9 +39,11 @@ public:
     client & operator= (client c);
     int send_message_to_contact (const char * name, const char * m);
     int send_message_to_contact (const std::string & name, const char * m);
+    void display_contacts (void);
 
 private:
     std::map<std::string, bool> _contacted;
+    std::map<std::string, bool> _asked;
     corbatur::sender _client_infos;
     contact_manager _contacts;
     const char * _program_name;
@@ -50,8 +52,12 @@ private:
     int _send_message_to_contact (const char * name, const char * m);
     int _send_message_to_contact (const contact & c, const char * m);
     int _send_message_to_contact (const std::string & name, const char * m);
+    bool _ask_infos_to_contact (const std::string & contact_name, const char * name);
+    bool _ask_infos_to_contact (const contact & c, const char * name);
+    bool _ask_infos_to_address (const char * address, const char * name);
 
     void _reset_contacted (void);
+    void _reset_asked (void);
 
     static const char _ORBINITREF[];
     static CORBA::Object_ptr _get_object_reference (CORBA::ORB_ptr orb);

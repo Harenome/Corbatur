@@ -12,7 +12,12 @@ Si vous avez à votre disposition le programme ```rlwrap```, il est vivement
 recommandé de l'utiliser :
 
 ```bash
-$ rlwrap -a ./corbatur <pseudo> [port]
+$ rlwrap -S "corbatur $ " -a ./corbatur <pseudo> [port]
+```
+Vous pouvez même faire un alias !
+```bash
+$ alias corbatur='rlwrap -S "corbatur $ " -a ./corbatur'
+$ corbatur <pseudo> [port]
 ```
 
 Compiler

@@ -9,5 +9,6 @@ module corbatur
     interface chat
     {
         void message (in sender s, in string content);
+        string ask_infos (in string name);
     };
 };

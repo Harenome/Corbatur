@@ -1,10 +1,29 @@
 #include "client.hpp"
 #include "parser.hpp"
 
+static char * help =
+"Commands:\n"
+"---------\n"
+"* h, help\n"
+"\tDisplay the help.\n"
+"* ls, list\n"
+"\tList contacts\n"
+"* bye, exit, quit\n"
+"\tQuit.\n"
+"Special commands:\n"
+"-----------------\n"
+"* <id>:<message>\n"
+"\tSend <message> to <id>. <id> and <message> must be separated with a column.\n"
+":<message>\n"
+"\tSend <message> to the last used <id>.\n";
+
 int main (int argc, char ** argv)
 {
+
     std::string name (argv[argc-2]);
     std::string address (argv[argc-1]);
+
+    std::cout << "Welcome to corbatur, " << name << "!" << std::endl << std::endl;
 
     client c (argv[0], name, address);
     c.read_contacts ("config.cfg");
@@ -27,7 +46,11 @@ int main (int argc, char ** argv)
             else
                 std::cerr << "Error : Sorry I did not understand whom to send your message." << std::endl;
         }
-        else if (line == "bye")
+        else if (line == "ls" || line == "list")
+            c.display_contacts ();
+        else if (line == "help" || line == "h")
+            std::cout << help;
+        else if (line == "bye" || line == "quit" || line == "ragequit" || line == "exit")
             return 0;
     }
 
