@@ -39,6 +39,7 @@ public:
     client (const char * program_name, const std::string & name, const std::string & address);
     client (const char * program_name, const std::string & name, const std::string & address, const contact_manager & contacts);
     ~client (void);
+    void set_self_address (const std::string & address);
     void run (void * arg);
     void swap (client & c);
     void read_contacts (const char * file_path);
@@ -51,6 +52,7 @@ private:
     corbatur::sender _client_infos;
     contact_manager _contacts;
     const char * _program_name;
+    std::string _self_address;
 
     void _print_prompt (void);
     int _send_message_to_address (const char * address, const char * m);

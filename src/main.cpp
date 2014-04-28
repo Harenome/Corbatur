@@ -15,6 +15,9 @@ int main (int argc, char ** argv)
 
     client * c = new client (argv[0], name, address);
     c->read_contacts ("config.cfg");
+    std::string local ("localhost:");
+    local += port;
+    c->set_self_address (local);
 
     char orb_init_ref[] = "-ORBInitRef";
     std::string localhost ("NameService=corbaname::localhost:");

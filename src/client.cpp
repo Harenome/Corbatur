@@ -106,6 +106,14 @@ int client::_send_message_to_contact (const contact & c, const char * m)
 
 int client::_send_message_to_address (const char * address, const char * m)
 {
+    std::string a (address);
+    std::string _info_address (_client_infos.address);
+    if (a == _self_address || a == _info_address)
+    {
+        std::cout << "Bro. Don't send messages to yourself." << std::endl;
+        return 0;
+    }
+
     try
     {
         int fake_argc = 3;
@@ -247,9 +255,6 @@ void client::run (void * arg)
         }
         _print_prompt ();
     }
-    /* std::cout << "LOLLLLLLLLLL" << std::endl; */
-    /* sleep (10); */
-    /* std::cout << "LOLLLLLLLLLL" << std::endl; */
 }
 
 client::client (void (*fn)(void*), void* arg, priority_t pri)
@@ -259,4 +264,9 @@ client::client (void (*fn)(void*), void* arg, priority_t pri)
 client::client (void * (*fn)(void*), void* arg, priority_t pri)
 : omni_thread (fn, arg, pri)
 {
+}
+
+void client::set_self_address (const std::string & address)
+{
+    _self_address = address;
 }
