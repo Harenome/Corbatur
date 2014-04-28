@@ -42,7 +42,7 @@ fi
 # echo ""
 sleep 1
 
-trap "echo ' ' && kill -9 $PID_OMNINAMES && exit 0" 0 2
+trap "echo ' ' && kill -9 $PID_OMNINAMES &> /dev/null && exit 0" 0 2
 
 # echo "Starting server..."
 LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH bin/server -ORBInitRef NameService=corbaname::localhost:$PORT

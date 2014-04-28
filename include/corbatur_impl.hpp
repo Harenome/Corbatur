@@ -24,12 +24,12 @@ class chat_impl: public POA_corbatur::chat
 {
 public:
     chat_impl (void);
-    chat_impl (contact_manager & manager);
+    chat_impl (const contact_manager & manager);
     virtual ~chat_impl (void);
     void set_manager (contact_manager & manager);
     void message (const corbatur::sender & s, const char * message);
 private:
-    contact_manager & _manager;
+    contact_manager _manager;
     std::string _last_contact;
 };
 

@@ -1,6 +1,31 @@
 CORBATÜR
 ========
 
+Lancer corbatur
+---------------
+Après avoir compilé le programme, lancez-le à l'aide du script ```corbatur``` :
+
+```bash
+$ ./corbatur <pseudo> [port]
+```
+Si vous avez à votre disposition le programme ```rlwrap```, il est vivement
+recommandé de l'utiliser :
+
+```bash
+$ rlwrap -a ./corbatur <pseudo> [port]
+```
+
+Compiler
+--------
+
+Il vous faut de quoi compiler le C++ et les bibliothèques de développement
+de python.
+
+```bash
+$ make omniorb
+$ make
+```
+
 License
 -------
 Copyright © 2014 Harenome RAZANAJATO, Jérémy MEYER

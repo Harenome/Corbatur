@@ -11,7 +11,6 @@ int main (int argc, char ** argv)
 
     std::string last_contact;
     char buffer[2048];
-    std::cout << "corbatur > ";
     while (std::cin.getline (buffer, 2048))
     {
         std::string line (buffer);
@@ -30,7 +29,6 @@ int main (int argc, char ** argv)
         }
         else if (line == "bye")
             return 0;
-        std::cout << "corbatur > ";
     }
 
     return 0;

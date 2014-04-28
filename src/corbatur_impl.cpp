@@ -19,7 +19,7 @@ chat_impl::chat_impl (void)
 {
 }
 
-chat_impl::chat_impl (contact_manager & manager)
+chat_impl::chat_impl (const contact_manager & manager)
 : _manager (manager), _last_contact ("")
 {
 }
@@ -38,9 +38,11 @@ void chat_impl::message (const corbatur::sender & s, const char * message)
     std::string name (s.name);
     std::string address (s.address);
 
+    _manager = contact_manager::read_contacts ("config.cfg");
     if (! _manager.exists (name))
         _manager.add_contact (name);
     _manager.add_address (name, address);
+    contact_manager::save_contacts ("config.cfg", _manager);
 
     std::cout << "> ";
     if (_last_contact != name)

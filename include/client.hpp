@@ -35,6 +35,7 @@ public:
     ~client (void);
     void swap (client & c);
     void read_contacts (const char * file_path);
+    void save_contacts (const char * file_path);
     client & operator= (client c);
     int send_message_to_contact (const char * name, const char * m);
     int send_message_to_contact (const std::string & name, const char * m);

@@ -188,3 +188,21 @@ std::istream & operator>> (std::istream & is, contact_manager & cm)
 
     return is;
 }
+
+contact_manager contact_manager::read_contacts (const char * file_path)
+{
+    contact_manager cm;
+    std::ifstream file;
+    file.open (file_path, std::ifstream::in);
+    file >> cm;
+    file.close ();
+    return cm;
+}
+
+void contact_manager::save_contacts (const char * file_path, const contact_manager & c)
+{
+    std::ofstream file;
+    file.open (file_path, std::ofstream::out);
+    file << c;
+    file.close ();
+}

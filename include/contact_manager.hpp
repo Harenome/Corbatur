@@ -20,6 +20,7 @@
 #include <iostream>
 #include <ostream>
 #include <istream>
+#include <fstream>
 #include <sstream>
 #include <cstdio>
 
@@ -61,6 +62,8 @@ public:
     std::ostream & write_to_stream (std::ostream & os) const;
     void swap (contact_manager & cm);
     contact_manager & operator= (contact_manager cm);
+    static contact_manager read_contacts (const char * file_path);
+    static void save_contacts (const char * file_path, const contact_manager & c);
 
 private:
     std::map<std::string, contact> _contacts;

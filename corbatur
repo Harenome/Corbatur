@@ -1,8 +1,24 @@
 #!/bin/bash
 
+PORT=2810
+
 if ! [[ -f bin/main ]]; then
     echo "Are you sure you ran make ?" 1&>2
     exit 66
 fi
 
-LD_LIBRARY_PATH=omniORB-4.1.7/lib:$LD_LIBRARY_PATH bin/main
+if [[ $# -eq 2 ]]; then
+    PORT=$2
+elif [[ $# -ne 1 ]]; then
+    echo "Usage: [rlwrap -a] $0 <nickname> [port]" 1<&2
+    exit 64
+fi
+
+./server $PORT &
+SERVER_PID=$!
+
+./client $1 "$(hostname -I | cut -d ' ' -f 1):$PORT"
+
+kill -9 $SERVER_PID &> /dev/null
+
+exit $?

@@ -49,11 +49,12 @@ client::~client (void)
 
 void client::read_contacts (const char * file_path)
 {
-    contact_manager cm;
-    std::ifstream file;
-    file.open (file_path, std::ifstream::in);
-    file >> cm;
-    _contacts = cm;
+    _contacts = contact_manager::read_contacts (file_path);
+}
+
+void client::save_contacts (const char * file_path)
+{
+    contact_manager::save_contacts (file_path, _contacts);
 }
 
 void client::_reset_contacted (void)
@@ -74,6 +75,7 @@ int client::send_message_to_contact (const char * name, const char * m)
 
 int client::send_message_to_contact (const std::string & name, const char * m)
 {
+    read_contacts ("config.cfg");
     _reset_contacted ();
     return _send_message_to_contact (name, m);
 }

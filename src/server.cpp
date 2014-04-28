@@ -16,6 +16,7 @@
 
 server::server (void)
 {
+    _manager = contact_manager::read_contacts ("config.cfg");
 }
 
 server::~server (void)
